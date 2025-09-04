@@ -1,0 +1,3 @@
+# dede
+
+simple dotfiles manager
