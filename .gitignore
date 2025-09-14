@@ -4,3 +4,8 @@
 nimcache/
 nimblecache/
 htmldocs/
+
+### sasaplus1/dede
+
+# binary
+/bin
