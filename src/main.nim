@@ -1,9 +1,13 @@
+import std/parseopt
 import std/strutils
+import command_deploy
+import command_init
+import command_test
 
 const VERSION = "0.1.0"
 
 proc showVersion() =
-  echo(VERSION)
+  echo VERSION
 
 proc showHelp() =
   const message = """
@@ -22,17 +26,12 @@ proc showHelp() =
       deploy         Deploy dotfiles
       test           Test deployed dotfiles
   """.dedent().strip()
-  echo(message)
+  echo message
 
 when isMainModule:
-  import std/parseopt
-  import command_deploy
-  import command_init
-  import command_test
-
   var parser = initOptParser()
   var command = ""
-  
+
   while true:
     parser.next()
     case parser.kind
@@ -53,12 +52,12 @@ when isMainModule:
     of cmdArgument:
       command = parser.key
       break
-  
+
   ## Show help if no command provided
   if command == "":
     showHelp()
     quit(1)
-  
+
   ## Pass remaining args to the command handler
   let remainingArgs = parser.remainingArgs()
   case command

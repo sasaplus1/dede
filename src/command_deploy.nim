@@ -1,17 +1,91 @@
+import std/os
 import std/parseopt
 import std/strutils
+import config
+import utility
 
 type
   DeployConfig* = object
     dryRun*: bool = false
     force*: bool = false
 
-proc deploy(config: DeployConfig) =
+proc deploy(deployConfig: DeployConfig) =
   ## Execute deployment
 
-  if config.dryRun and config.force:
-    echo("Error: --dry-run and --force options are both set.")
+  if deployConfig.dryRun and deployConfig.force:
+    echo "Error: --dry-run and --force options are both set."
     quit(1)
+
+  # Load configuration
+  let config = loadConfig("dede.yml")
+
+  # Process directories
+  for dir in config.directories:
+    let expandedPath = expandEnvVars(dir, config.expand)
+
+    if deployConfig.dryRun:
+      echo "[DRY-RUN] Would create directory: ", expandedPath
+    else:
+      if not dirExists(expandedPath):
+        echo "Creating directory: ", expandedPath
+        createDir(expandedPath)
+      else:
+        echo "Directory already exists: ", expandedPath
+
+  # Process symlinks
+  for link in config.symlinks:
+    if link[0] == "" or link[1] == "":
+      continue
+
+    let source = expandEnvVars(link[0], config.expand)
+    let dest = expandEnvVars(link[1], config.expand)
+
+    if deployConfig.dryRun:
+      echo "[DRY-RUN] Would create symlink: ", source, " -> ", dest
+    else:
+      let destExists = symlinkExists(dest) or fileExists(dest) or dirExists(dest)
+
+      if destExists and not deployConfig.force:
+        echo "Symlink destination already exists: ", dest
+      else:
+        if destExists and deployConfig.force:
+          echo "Removing existing: ", dest
+          if symlinkExists(dest):
+            removeFile(dest)
+          elif fileExists(dest):
+            removeFile(dest)
+          elif dirExists(dest):
+            removeDir(dest)
+
+        echo "Creating symlink: ", source, " -> ", dest
+        createSymlink(source, dest)
+
+  # Process file copies
+  for copy in config.copies:
+    if copy[0] == "" or copy[1] == "":
+      continue
+
+    let source = expandEnvVars(copy[0], config.expand)
+    let dest = expandEnvVars(copy[1], config.expand)
+
+    if deployConfig.dryRun:
+      echo "[DRY-RUN] Would copy file: ", source, " -> ", dest
+    else:
+      if not fileExists(source):
+        echo "Warning: Source file not found: ", source
+        continue
+
+      let destExists = fileExists(dest)
+
+      if destExists and not deployConfig.force:
+        echo "Destination file already exists: ", dest
+      else:
+        if destExists and deployConfig.force:
+          echo "Overwriting existing file: ", dest
+        else:
+          echo "Copying file: ", source, " -> ", dest
+
+        copyFileWithPermissions(source, dest)
 
 proc showDeployHelp() =
   ## Show help message for deploy command
@@ -27,7 +101,7 @@ proc showDeployHelp() =
       --force     Force deployment execution
       -h, --help  Show this help message
   """.dedent().strip()
-  echo(message)
+  echo message
 
 proc commandDeploy*(args: seq[string]) =
   ## Deploy command implementation
@@ -36,7 +110,7 @@ proc commandDeploy*(args: seq[string]) =
   var dryRun = false
   var force = false
   var remainingArgs: seq[string] = @[]
-  
+
   while true:
     parser.next()
     case parser.kind
