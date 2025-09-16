@@ -1,10 +1,9 @@
 import std/parseopt
 import std/strutils
+import ../meta
 import command_deploy
 import command_init
 import command_test
-
-const VERSION = "0.1.0"
 
 proc showVersion() =
   echo VERSION

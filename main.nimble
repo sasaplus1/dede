@@ -1,6 +1,8 @@
+include "meta.nim"
+
 # Package
 
-version          = "0.1.0"
+version          = VERSION
 author           = "sasaplus1"
 description      = "simple dotfiles manager"
 license          = "MIT"
