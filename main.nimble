@@ -15,3 +15,11 @@ binDir           = "bin"
 
 requires "nim >= 2.2.4"
 requires "yaml"
+
+# Tasks
+
+task test, "Run tests":
+  # exec "nim c -d:release -o:bin/dede src/main.nim"
+  exec "nimble build"
+  exec "nim r test/test.nim"
+  rmFile("bin/dede")
