@@ -19,10 +19,12 @@ requires "yaml"
 # Tasks
 
 task test, "Run tests":
-  # exec "nim c -d:release -o:bin/dede src/main.nim"
-  exec "nimble build"
-  exec "nim r test/test.nim"
-  rmFile("bin/dede")
+  exec "nim c -o:bin/dede_test src/main.nim"
+  try:
+    exec "nim r test/test.nim"
+  finally:
+    if fileExists("bin/dede_test"):
+      rmFile("bin/dede_test")
 
 task release, "Build release binary":
   exec "nimble build -d:release"
