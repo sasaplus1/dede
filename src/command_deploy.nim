@@ -100,7 +100,7 @@ proc showDeployHelp() =
 proc commandDeploy*(args: seq[string]) =
   ## Deploy command implementation
 
-  var parser = initOptParser(args, shortNoVal = {'h'}, longNoVal = @["help", "dry-run", "force"])
+  var parser = initOptParser(args, shortNoVal = {'v'}, longNoVal = @["help", "verbose", "dry-run", "force"])
   var dryRun = false
   var force = false
   var envVars: seq[string] = @[]

@@ -95,7 +95,7 @@ proc showTestHelp() =
 proc commandTest*(args: seq[string]) =
   ## Test command implementation
 
-  var parser = initOptParser(args, shortNoVal = {'h'}, longNoVal = @["help"])
+  var parser = initOptParser(args, shortNoVal = {'v'}, longNoVal = @["help", "verbose"])
   var envVars: seq[string] = @[]
   var remainingArgs: seq[string] = @[]
 

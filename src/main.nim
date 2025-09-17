@@ -14,7 +14,7 @@ proc showHelp() =
   echo strip(message)
 
 when isMainModule:
-  var parser = initOptParser()
+  var parser = initOptParser(longNoVal = @["help", "version"])
   var command = ""
 
   while true:
@@ -30,8 +30,6 @@ when isMainModule:
       of "version":
         showVersion()
         quit(0)
-      of "verbose", "v":
-        isVerbose = true
       else:
         echoError "Unknown option: ", parser.key
         showHelp()

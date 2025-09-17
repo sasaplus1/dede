@@ -20,7 +20,7 @@ proc showInitHelp() =
 proc commandInit*(args: seq[string]) =
   ## Init command implementation
 
-  var parser = initOptParser(args, longNoVal = @["help", "verbose"])
+  var parser = initOptParser(args, shortNoVal = {'v'}, longNoVal = @["help", "verbose"])
   var remainingArgs: seq[string] = @[]
   var configFile = "dede.yml"
   var expectConfigFile = false
