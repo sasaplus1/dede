@@ -1,0 +1,18 @@
+# expand environment variables
+expand:
+  - HOME
+
+# create directories
+directories:
+  # - "$HOME/.local/bin"
+  - ""
+
+# create symlinks
+symlinks:
+  # - ["/path/to/dotfiles/vim/.vimrc", "$HOME/.vimrc"]
+  - []
+
+# copy files
+copies:
+  # - ["/path/to/.claude/settings.json", "$HOME/.claude/settings.json"]
+  - []

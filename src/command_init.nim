@@ -10,28 +10,7 @@ proc init() =
     echo "Error: ", configFile, " already exists"
     quit(1)
 
-  const defaultConfig = """
-    # expand environment variables (optional)
-    # expand:
-    #   - USER
-    #   - XDG_CONFIG_HOME
-
-    # create directories
-    directories:
-      # - "$HOME/.local/bin"
-      - ""
-
-    # create symlinks
-    symlinks:
-      # - ["/path/to/dotfiles/vim/.vimrc", "$HOME/.vimrc"]
-      - []
-
-    # copy files
-    copies:
-      # - ["/path/to/.claude/settings.json", "$HOME/.claude/settings.json"]
-      - []
-  """.dedent()
-
+  const defaultConfig = staticRead("default_config.yml")
   writeFile(configFile, defaultConfig)
 
 proc showInitHelp() =
