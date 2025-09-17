@@ -9,3 +9,7 @@ htmldocs/
 
 # binary
 /bin
+
+# configuration file
+/.dede.yml
+/dede.yml
