@@ -3,9 +3,8 @@ import std/parseopt
 import std/strutils
 import log
 
-proc init() =
+proc init(configFile: string = "dede.yml") =
   ## Initialize deployment configuration
-  const configFile = "dede.yml"
 
   if fileExists(configFile):
     echoError "Error: ", configFile, " already exists"
@@ -21,8 +20,10 @@ proc showInitHelp() =
 proc commandInit*(args: seq[string]) =
   ## Init command implementation
 
-  var parser = initOptParser(args)
+  var parser = initOptParser(args, longNoVal = @["help", "verbose"])
   var remainingArgs: seq[string] = @[]
+  var configFile = "dede.yml"
+  var expectConfigFile = false
 
   while true:
     parser.next()
@@ -36,12 +37,26 @@ proc commandInit*(args: seq[string]) =
         quit(0)
       of "verbose", "v":
         isVerbose = true
+      of "c", "config":
+        if parser.val != "":
+          configFile = parser.val
+        else:
+          expectConfigFile = true
       else:
         echoError "init: Unknown option: --", parser.key
         showInitHelp()
         quit(1)
     of cmdArgument:
-      remainingArgs.add(parser.key)
+      if expectConfigFile:
+        configFile = parser.key
+        expectConfigFile = false
+      else:
+        remainingArgs.add(parser.key)
+
+  ## Check if we're still expecting a config file
+  if expectConfigFile:
+    echoError "Error: -c/--config requires a value (use -c FILE or --config=FILE)"
+    quit(1)
 
   ## Execute init
-  init()
+  init(configFile)

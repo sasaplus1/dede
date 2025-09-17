@@ -4,4 +4,5 @@ Usage:
   dede init [OPTIONS]
 
 Options:
-  --help  Show this help message
+  -c, --config FILE  Specify configuration file name (default: dede.yml)
+  --help             Show this help message
