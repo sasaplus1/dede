@@ -2,6 +2,7 @@ import std/os
 import std/parseopt
 import std/strutils
 import config
+import log
 import utility
 
 proc checkDirectories(directories: seq[string], envVars: seq[string]) =
@@ -11,9 +12,9 @@ proc checkDirectories(directories: seq[string], envVars: seq[string]) =
     if path == "":
       continue
     if dirExists(path):
-      echo "✓ Directory exists: ", path
+      echoVerbose "✓ Directory exists: ", path
     else:
-      echo "✗ Directory missing: ", path
+      echoVerbose "✗ Directory missing: ", path
 
 proc checkSymlinks(symlinks: seq[array[2, string]], envVars: seq[string]) =
   ## Check if symlinks are correctly set
@@ -26,11 +27,11 @@ proc checkSymlinks(symlinks: seq[array[2, string]], envVars: seq[string]) =
     if symlinkExists(target):
       let actual = expandSymlink(target)
       if actual == source:
-        echo "✓ Symlink correct: ", target, " -> ", source
+        echoVerbose "✓ Symlink correct: ", target, " -> ", source
       else:
-        echo "✗ Symlink incorrect: ", target, " -> ", actual, " (expected ", source, ")"
+        echoVerbose "✗ Symlink incorrect: ", target, " -> ", actual, " (expected ", source, ")"
     else:
-      echo "✗ Symlink missing: ", target
+      echoVerbose "✗ Symlink missing: ", target
 
 proc checkCopies(copies: seq[array[2, string]], envVars: seq[string]) =
   ## Check if copied files match
@@ -45,13 +46,13 @@ proc checkCopies(copies: seq[array[2, string]], envVars: seq[string]) =
         let sourceContent = readFile(source)
         let targetContent = readFile(target)
         if sourceContent == targetContent:
-          echo "✓ File matches: ", target
+          echoVerbose "✓ File matches: ", target
         else:
-          echo "✗ File differs: ", target
+          echoVerbose "✗ File differs: ", target
       else:
-        echo "✗ Source file missing: ", source
+        echoVerbose "✗ Source file missing: ", source
     else:
-      echo "✗ Target file missing: ", target
+      echoVerbose "✗ Target file missing: ", target
 
 proc test(envVars: seq[string] = @[]) =
   ## Test deployed dotfiles
@@ -62,28 +63,28 @@ proc test(envVars: seq[string] = @[]) =
   # Combine environment variables from config and command line
   let expandedVars = mergeEnvVars(config.expand, envVars)
 
-  echo "Testing deployment configuration..."
+  echoVerbose "Testing deployment configuration..."
   if expandedVars.len > 0:
-    echo "Expanding variables: ", expandedVars
-  echo ""
+    echoVerbose "Expanding variables: ", $expandedVars
+  echoVerbose ""
 
   # Check directories
   if config.directories.len > 0:
-    echo "Checking directories..."
+    echoVerbose "Checking directories..."
     checkDirectories(config.directories, expandedVars)
-    echo ""
+    echoVerbose ""
 
   # Check symlinks
   if config.symlinks.len > 0:
-    echo "Checking symlinks..."
+    echoVerbose "Checking symlinks..."
     checkSymlinks(config.symlinks, expandedVars)
-    echo ""
+    echoVerbose ""
 
   # Check copies
   if config.copies.len > 0:
-    echo "Checking copied files..."
+    echoVerbose "Checking copied files..."
     checkCopies(config.copies, expandedVars)
-    echo ""
+    echoVerbose ""
 
   echo "Test completed"
 
@@ -112,10 +113,12 @@ proc commandTest*(args: seq[string]) =
         if parser.val != "":
           envVars.add(parser.val)
         else:
-          echo "Error: -e/--expand requires a value (use -e VAR or --expand=VAR)"
+          echoError "Error: -e/--expand requires a value (use -e VAR or --expand=VAR)"
           quit(1)
+      of "verbose", "v":
+        isVerbose = true
       else:
-        echo "test: Unknown option: --", parser.key
+        echoError "test: Unknown option: --", parser.key
         showTestHelp()
         quit(1)
     of cmdArgument:

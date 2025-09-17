@@ -1,13 +1,14 @@
 import std/os
 import std/parseopt
 import std/strutils
+import log
 
 proc init() =
   ## Initialize deployment configuration
   const configFile = "dede.yml"
 
   if fileExists(configFile):
-    echo "Error: ", configFile, " already exists"
+    echoError "Error: ", configFile, " already exists"
     quit(1)
 
   const defaultConfig = staticRead("default_config.yml")
@@ -33,8 +34,10 @@ proc commandInit*(args: seq[string]) =
       of "help":
         showInitHelp()
         quit(0)
+      of "verbose", "v":
+        isVerbose = true
       else:
-        echo "init: Unknown option: --", parser.key
+        echoError "init: Unknown option: --", parser.key
         showInitHelp()
         quit(1)
     of cmdArgument:

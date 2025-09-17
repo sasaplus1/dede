@@ -4,6 +4,7 @@ import ../meta
 import command_deploy
 import command_init
 import command_test
+import log
 
 proc showVersion() =
   echo VERSION
@@ -29,8 +30,10 @@ when isMainModule:
       of "version":
         showVersion()
         quit(0)
+      of "verbose", "v":
+        isVerbose = true
       else:
-        echo "Unknown option: ", parser.key
+        echoError "Unknown option: ", parser.key
         showHelp()
         quit(1)
     of cmdArgument:
