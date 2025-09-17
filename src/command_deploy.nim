@@ -151,6 +151,12 @@ proc commandDeploy*(args: seq[string]) =
     echoError "Error: -c/--config requires a value (use -c FILE or --config=FILE)"
     quit(1)
 
+  ## If no config file specified, look for default configs
+  if configFile == "dede.yml":
+    let foundConfig = findDefaultConfigFile()
+    if foundConfig != "":
+      configFile = foundConfig
+
   ## Execute deploy
   let deployConfig = DeployConfig(dryRun: dryRun, force: force, envVars: envVars)
   deploy(deployConfig, configFile)

@@ -10,7 +10,18 @@ type
     symlinks*: seq[array[2, string]] = @[]
     copies*: seq[array[2, string]] = @[]
 
-# TODO: std/optionsをimportしてOption[T]を使う
+proc findDefaultConfigFile*(): string =
+  ## Find the default configuration file
+  ## Returns the first existing file: dede.yml, .dede.yml
+  ## Returns empty string if none exist
+  if fileExists("dede.yml"):
+    return "dede.yml"
+  elif fileExists(".dede.yml"):
+    return ".dede.yml"
+  else:
+    return ""
+
+# TODO: use Result when import std/options
 proc loadConfig*(configFile: string): Config =
   ## Load configuration from YAML file
   if not fileExists(configFile):

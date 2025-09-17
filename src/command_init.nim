@@ -1,14 +1,23 @@
 import std/os
 import std/parseopt
 import std/strutils
+import config
 import log
 
 proc init(configFile: string = "dede.yml") =
   ## Initialize deployment configuration
 
-  if fileExists(configFile):
-    echoError "Error: ", configFile, " already exists"
-    quit(1)
+  # Check if any default config exists when no config specified
+  if configFile == "dede.yml":
+    let existingConfig = findDefaultConfigFile()
+    if existingConfig != "":
+      echoError "Error: ", existingConfig, " already exists"
+      quit(1)
+  else:
+    # Check if specified config exists
+    if fileExists(configFile):
+      echoError "Error: ", configFile, " already exists"
+      quit(1)
 
   const defaultConfig = staticRead("default_config.yml")
   writeFile(configFile, defaultConfig)
