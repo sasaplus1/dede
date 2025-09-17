@@ -4,5 +4,6 @@ Usage:
   dede test [OPTIONS]
 
 Options:
+  -c, --config FILE  Specify configuration file name (default: dede.yml)
   -e, --expand VAR  Expand additional environment variable
   --help            Show this help message

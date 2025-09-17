@@ -54,9 +54,8 @@ proc checkCopies(copies: seq[array[2, string]], envVars: seq[string]) =
     else:
       echoVerbose "✗ Target file missing: ", target
 
-proc test(envVars: seq[string] = @[]) =
+proc test(configFile: string = "dede.yml", envVars: seq[string] = @[]) =
   ## Test deployed dotfiles
-  const configFile = "dede.yml"
 
   var config = loadConfig(configFile)
 
@@ -98,6 +97,8 @@ proc commandTest*(args: seq[string]) =
   var parser = initOptParser(args, shortNoVal = {'v'}, longNoVal = @["help", "verbose"])
   var envVars: seq[string] = @[]
   var remainingArgs: seq[string] = @[]
+  var configFile = "dede.yml"
+  var expectConfigFile = false
 
   while true:
     parser.next()
@@ -115,6 +116,11 @@ proc commandTest*(args: seq[string]) =
         else:
           echoError "Error: -e/--expand requires a value (use -e VAR or --expand=VAR)"
           quit(1)
+      of "c", "config":
+        if parser.val != "":
+          configFile = parser.val
+        else:
+          expectConfigFile = true
       of "verbose", "v":
         isVerbose = true
       else:
@@ -122,7 +128,16 @@ proc commandTest*(args: seq[string]) =
         showTestHelp()
         quit(1)
     of cmdArgument:
-      remainingArgs.add(parser.key)
+      if expectConfigFile:
+        configFile = parser.key
+        expectConfigFile = false
+      else:
+        remainingArgs.add(parser.key)
+
+  ## Check if we're still expecting a config file
+  if expectConfigFile:
+    echoError "Error: -c/--config requires a value (use -c FILE or --config=FILE)"
+    quit(1)
 
   ## Execute test
-  test(envVars)
+  test(configFile, envVars)

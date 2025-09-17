@@ -4,6 +4,7 @@ Usage:
   dede deploy [OPTIONS]
 
 Options:
+  -c, --config FILE  Specify configuration file name (default: dede.yml)
   -e, --expand VAR  Expand additional environment variable
   --dry-run         Show what would be deployed without executing
   --force           Force deployment execution

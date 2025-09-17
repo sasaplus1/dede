@@ -11,7 +11,7 @@ type
     force*: bool = false
     envVars*: seq[string] = @[]
 
-proc deploy(deployConfig: DeployConfig) =
+proc deploy(deployConfig: DeployConfig, configFile: string = "dede.yml") =
   ## Execute deployment
 
   if deployConfig.dryRun and deployConfig.force:
@@ -19,7 +19,7 @@ proc deploy(deployConfig: DeployConfig) =
     quit(1)
 
   # Load configuration
-  let config = loadConfig("dede.yml")
+  let config = loadConfig(configFile)
 
   # Merge environment variables from config and command line
   let expandedVars = mergeEnvVars(config.expand, deployConfig.envVars)
@@ -105,6 +105,8 @@ proc commandDeploy*(args: seq[string]) =
   var force = false
   var envVars: seq[string] = @[]
   var remainingArgs: seq[string] = @[]
+  var configFile = "dede.yml"
+  var expectConfigFile = false
 
   while true:
     parser.next()
@@ -126,6 +128,11 @@ proc commandDeploy*(args: seq[string]) =
         else:
           echoError "Error: -e/--expand requires a value (use -e VAR or --expand=VAR)"
           quit(1)
+      of "c", "config":
+        if parser.val != "":
+          configFile = parser.val
+        else:
+          expectConfigFile = true
       of "verbose", "v":
         isVerbose = true
       else:
@@ -133,8 +140,17 @@ proc commandDeploy*(args: seq[string]) =
         showDeployHelp()
         quit(1)
     of cmdArgument:
-      remainingArgs.add(parser.key)
+      if expectConfigFile:
+        configFile = parser.key
+        expectConfigFile = false
+      else:
+        remainingArgs.add(parser.key)
+
+  ## Check if we're still expecting a config file
+  if expectConfigFile:
+    echoError "Error: -c/--config requires a value (use -c FILE or --config=FILE)"
+    quit(1)
 
   ## Execute deploy
   let deployConfig = DeployConfig(dryRun: dryRun, force: force, envVars: envVars)
-  deploy(deployConfig)
+  deploy(deployConfig, configFile)
