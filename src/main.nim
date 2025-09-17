@@ -9,23 +9,8 @@ proc showVersion() =
   echo VERSION
 
 proc showHelp() =
-  const message = """
-    dede - simple dotfiles manager
-
-    Usage:
-      dede [OPTIONS]
-      dede COMMAND [OPTIONS]
-
-    Options:
-      -h, --help     Show this help message
-      -v, --version  Show version information
-
-    Commands:
-      init           Initialize deployment configuration
-      deploy         Deploy dotfiles
-      test           Test deployed dotfiles
-  """.dedent().strip()
-  echo message
+  const message = staticRead("main_help.txt")
+  echo strip(message)
 
 when isMainModule:
   var parser = initOptParser()
@@ -38,10 +23,10 @@ when isMainModule:
       break
     of cmdLongOption, cmdShortOption:
       case parser.key
-      of "h", "help":
+      of "help":
         showHelp()
         quit(0)
-      of "v", "version":
+      of "version":
         showVersion()
         quit(0)
       else:

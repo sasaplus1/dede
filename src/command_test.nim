@@ -95,17 +95,8 @@ proc test(additionalEnvVars: seq[string] = @[]) =
   echo "Test completed"
 
 proc showTestHelp() =
-  const message = """
-    dede test - Test deployed dotfiles
-
-    Usage:
-      dede test [OPTIONS]
-
-    Options:
-      -e, --expand VAR  Expand additional environment variable
-      -h, --help        Show this help message
-  """.dedent().strip()
-  echo message
+  const message = staticRead("command_test_help.txt")
+  echo strip(message)
 
 proc commandTest*(args: seq[string]) =
   ## Test command implementation
@@ -121,7 +112,7 @@ proc commandTest*(args: seq[string]) =
       break
     of cmdLongOption, cmdShortOption:
       case parser.key
-      of "h", "help":
+      of "help":
         showTestHelp()
         quit(0)
       of "e", "expand":

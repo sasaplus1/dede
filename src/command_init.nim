@@ -35,16 +35,8 @@ proc init() =
   writeFile(configFile, defaultConfig)
 
 proc showInitHelp() =
-  const message = """
-    dede init - Initialize deployment configuration
-
-    Usage:
-      dede init [OPTIONS]
-
-    Options:
-      -h, --help  Show this help message
-  """.dedent().strip()
-  echo message
+  const message = staticRead("command_init_help.txt")
+  echo strip(message)
 
 proc commandInit*(args: seq[string]) =
   ## Init command implementation
@@ -59,7 +51,7 @@ proc commandInit*(args: seq[string]) =
       break
     of cmdLongOption, cmdShortOption:
       case parser.key
-      of "h", "help":
+      of "help":
         showInitHelp()
         quit(0)
       else:

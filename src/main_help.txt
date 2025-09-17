@@ -1,0 +1,14 @@
+dede - simple dotfiles manager
+
+Usage:
+  dede [OPTIONS]
+  dede COMMAND [OPTIONS]
+
+Options:
+  --help     Show this help message
+  --version  Show version information
+
+Commands:
+  init       Initialize deployment configuration
+  deploy     Deploy dotfiles
+  test       Test deployed dotfiles

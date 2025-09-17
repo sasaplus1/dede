@@ -89,19 +89,8 @@ proc deploy(deployConfig: DeployConfig) =
 
 proc showDeployHelp() =
   ## Show help message for deploy command
-
-  const message = """
-    dede deploy - Deploy dotfiles
-
-    Usage:
-      dede deploy [OPTIONS]
-
-    Options:
-      --dry-run   Show what would be deployed without executing
-      --force     Force deployment execution
-      -h, --help  Show this help message
-  """.dedent().strip()
-  echo message
+  const message = staticRead("command_deploy_help.txt")
+  echo strip(message)
 
 proc commandDeploy*(args: seq[string]) =
   ## Deploy command implementation
@@ -122,7 +111,7 @@ proc commandDeploy*(args: seq[string]) =
         dryRun = true
       of "force":
         force = true
-      of "h", "help":
+      of "help":
         showDeployHelp()
         quit(0)
       else:

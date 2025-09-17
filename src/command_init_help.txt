@@ -1,0 +1,7 @@
+dede init - Initialize deployment configuration
+
+Usage:
+  dede init [OPTIONS]
+
+Options:
+  --help  Show this help message

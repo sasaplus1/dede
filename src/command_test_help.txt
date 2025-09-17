@@ -1,0 +1,8 @@
+dede test - Test deployed dotfiles
+
+Usage:
+  dede test [OPTIONS]
+
+Options:
+  -e, --expand VAR  Expand additional environment variable
+  --help            Show this help message
