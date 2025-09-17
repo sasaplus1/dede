@@ -4,7 +4,7 @@ import yaml
 
 type
   Config* = object
-    expand*: seq[string] = @["HOME"]
+    expand*: seq[string] = @[]
     directories*: seq[string] = @[]
     symlinks*: seq[array[2, string]] = @[]
     copies*: seq[array[2, string]] = @[]

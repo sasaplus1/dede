@@ -8,6 +8,7 @@ type
   DeployConfig* = object
     dryRun*: bool = false
     force*: bool = false
+    envVars*: seq[string] = @[]
 
 proc deploy(deployConfig: DeployConfig) =
   ## Execute deployment
@@ -19,9 +20,12 @@ proc deploy(deployConfig: DeployConfig) =
   # Load configuration
   let config = loadConfig("dede.yml")
 
+  # Merge environment variables from config and command line
+  let expandedVars = mergeEnvVars(config.expand, deployConfig.envVars)
+
   # Process directories
   for dir in config.directories:
-    let expandedPath = expandEnvVars(dir, config.expand)
+    let expandedPath = expandEnvVars(dir, expandedVars)
 
     if deployConfig.dryRun:
       echo "[DRY-RUN] Would create directory: ", expandedPath
@@ -37,8 +41,8 @@ proc deploy(deployConfig: DeployConfig) =
     if link[0] == "" or link[1] == "":
       continue
 
-    let source = expandEnvVars(link[0], config.expand)
-    let dest = expandEnvVars(link[1], config.expand)
+    let source = expandEnvVars(link[0], expandedVars)
+    let dest = expandEnvVars(link[1], expandedVars)
 
     if deployConfig.dryRun:
       echo "[DRY-RUN] Would create symlink: ", source, " -> ", dest
@@ -65,8 +69,8 @@ proc deploy(deployConfig: DeployConfig) =
     if copy[0] == "" or copy[1] == "":
       continue
 
-    let source = expandEnvVars(copy[0], config.expand)
-    let dest = expandEnvVars(copy[1], config.expand)
+    let source = expandEnvVars(copy[0], expandedVars)
+    let dest = expandEnvVars(copy[1], expandedVars)
 
     if deployConfig.dryRun:
       echo "[DRY-RUN] Would copy file: ", source, " -> ", dest
@@ -95,9 +99,10 @@ proc showDeployHelp() =
 proc commandDeploy*(args: seq[string]) =
   ## Deploy command implementation
 
-  var parser = initOptParser(args)
+  var parser = initOptParser(args, shortNoVal = {'h'}, longNoVal = @["help", "dry-run", "force"])
   var dryRun = false
   var force = false
+  var envVars: seq[string] = @[]
   var remainingArgs: seq[string] = @[]
 
   while true:
@@ -114,6 +119,12 @@ proc commandDeploy*(args: seq[string]) =
       of "help":
         showDeployHelp()
         quit(0)
+      of "e", "expand":
+        if parser.val != "":
+          envVars.add(parser.val)
+        else:
+          echo "Error: -e/--expand requires a value (use -e VAR or --expand=VAR)"
+          quit(1)
       else:
         echo "deploy: Unknown option: --", parser.key
         showDeployHelp()
@@ -122,5 +133,5 @@ proc commandDeploy*(args: seq[string]) =
       remainingArgs.add(parser.key)
 
   ## Execute deploy
-  let deployConfig = DeployConfig(dryRun: dryRun, force: force)
+  let deployConfig = DeployConfig(dryRun: dryRun, force: force, envVars: envVars)
   deploy(deployConfig)

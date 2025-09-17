@@ -53,43 +53,36 @@ proc checkCopies(copies: seq[array[2, string]], envVars: seq[string]) =
     else:
       echo "✗ Target file missing: ", target
 
-proc test(additionalEnvVars: seq[string] = @[]) =
+proc test(envVars: seq[string] = @[]) =
   ## Test deployed dotfiles
   const configFile = "dede.yml"
 
   var config = loadConfig(configFile)
 
   # Combine environment variables from config and command line
-  # Always include HOME by default
-  var envVars = @["HOME"]
-  for v in config.expand:
-    if v notin envVars:
-      envVars.add(v)
-  for v in additionalEnvVars:
-    if v notin envVars:
-      envVars.add(v)
+  let expandedVars = mergeEnvVars(config.expand, envVars)
 
   echo "Testing deployment configuration..."
-  if envVars.len > 0:
-    echo "Expanding variables: ", envVars
+  if expandedVars.len > 0:
+    echo "Expanding variables: ", expandedVars
   echo ""
 
   # Check directories
   if config.directories.len > 0:
     echo "Checking directories..."
-    checkDirectories(config.directories, envVars)
+    checkDirectories(config.directories, expandedVars)
     echo ""
 
   # Check symlinks
   if config.symlinks.len > 0:
     echo "Checking symlinks..."
-    checkSymlinks(config.symlinks, envVars)
+    checkSymlinks(config.symlinks, expandedVars)
     echo ""
 
   # Check copies
   if config.copies.len > 0:
     echo "Checking copied files..."
-    checkCopies(config.copies, envVars)
+    checkCopies(config.copies, expandedVars)
     echo ""
 
   echo "Test completed"
@@ -102,7 +95,7 @@ proc commandTest*(args: seq[string]) =
   ## Test command implementation
 
   var parser = initOptParser(args, shortNoVal = {'h'}, longNoVal = @["help"])
-  var additionalEnvVars: seq[string] = @[]
+  var envVars: seq[string] = @[]
   var remainingArgs: seq[string] = @[]
 
   while true:
@@ -117,7 +110,7 @@ proc commandTest*(args: seq[string]) =
         quit(0)
       of "e", "expand":
         if parser.val != "":
-          additionalEnvVars.add(parser.val)
+          envVars.add(parser.val)
         else:
           echo "Error: -e/--expand requires a value (use -e VAR or --expand=VAR)"
           quit(1)
@@ -129,4 +122,4 @@ proc commandTest*(args: seq[string]) =
       remainingArgs.add(parser.key)
 
   ## Execute test
-  test(additionalEnvVars)
+  test(envVars)

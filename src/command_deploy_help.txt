@@ -4,6 +4,7 @@ Usage:
   dede deploy [OPTIONS]
 
 Options:
-  --dry-run  Show what would be deployed without executing
-  --force    Force deployment execution
-  --help     Show this help message
+  -e, --expand VAR  Expand additional environment variable
+  --dry-run         Show what would be deployed without executing
+  --force           Force deployment execution
+  --help            Show this help message
