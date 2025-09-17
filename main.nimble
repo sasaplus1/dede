@@ -23,3 +23,6 @@ task test, "Run tests":
   exec "nimble build"
   exec "nim r test/test.nim"
   rmFile("bin/dede")
+
+task release, "Build release binary":
+  exec "nimble build -d:release"
