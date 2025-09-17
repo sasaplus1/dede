@@ -134,7 +134,7 @@ proc commandDeploy*(args: seq[string]) =
         else:
           expectConfigFile = true
       of "verbose", "v":
-        isVerbose = true
+        log.isVerbose = true
       else:
         echoError "deploy: Unknown option: --", parser.key
         showDeployHelp()

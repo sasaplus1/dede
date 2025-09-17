@@ -45,7 +45,7 @@ proc commandInit*(args: seq[string]) =
         showInitHelp()
         quit(0)
       of "verbose", "v":
-        isVerbose = true
+        log.isVerbose = true
       of "c", "config":
         if parser.val != "":
           configFile = parser.val

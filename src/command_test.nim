@@ -122,7 +122,7 @@ proc commandTest*(args: seq[string]) =
         else:
           expectConfigFile = true
       of "verbose", "v":
-        isVerbose = true
+        log.isVerbose = true
       else:
         echoError "test: Unknown option: --", parser.key
         showTestHelp()
