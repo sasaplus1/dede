@@ -39,3 +39,42 @@ jobs:
         with:
           name: dede
           path: ./bin/dede
+  release:
+    name: release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - if: matrix.os != 'macos-latest'
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: 2.2.4
+          nim-install-directory: nim
+          parent-nim-install-directory: /opt
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - if: matrix.os == 'macos-latest'
+        run: brew install nim@2.2.4
+      - run: nimble release
+      - if: matrix.os == 'windows-latest'
+        uses: actions/download-artifact@v4
+        with:
+          name: dede-${{ matrix.os }}
+          path: ./bin/dede.exe
+      - if: matrix.os != 'windows-latest'
+        uses: actions/download-artifact@v4
+        with:
+          name: dede-${{ matrix.os }}
+          path: ./bin/dede
