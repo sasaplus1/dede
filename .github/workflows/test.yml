@@ -34,3 +34,8 @@ jobs:
           parent-nim-install-directory: /opt
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: ${{ matrix.command }}
+      - if: matrix.command == 'nimble build'
+        uses: actions/upload-artifact@v3
+        with:
+          name: dede
+          path: ./bin/dede
