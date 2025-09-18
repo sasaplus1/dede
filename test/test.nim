@@ -123,21 +123,26 @@ suite "config file priority tests":
     let testDir2 = tmpDir / "dede_test2"
 
     # dede.yml with a specific directory
-    writeFile("dede.yml", fmt"""expand:
-  - HOME
-directories:
-  - "{testDir1}"
-symlinks: []
-copies: []
-""")
+    let dedeYmlContent = dedent(fmt"""
+      expand:
+        - HOME
+      directories:
+        - "{testDir1}"
+      symlinks: []
+      copies: []
+      """)
+    writeFile("dede.yml", dedeYmlContent)
+
     # .dede.yml with a different directory
-    writeFile(".dede.yml", fmt"""expand:
-  - HOME
-directories:
-  - "{testDir2}"
-symlinks: []
-copies: []
-""")
+    let dotDedeYmlContent = dedent(fmt"""
+      expand:
+        - HOME
+      directories:
+        - "{testDir2}"
+      symlinks: []
+      copies: []
+      """)
+    writeFile(".dede.yml", dotDedeYmlContent)
 
     let (output, code) = runExecutable("test -v")
     check code == 0
@@ -154,13 +159,15 @@ copies: []
 
     let testDir2 = tmpDir / "dede_test2"
 
-    writeFile(".dede.yml", fmt"""expand:
-  - HOME
-directories:
-  - "{testDir2}"
-symlinks: []
-copies: []
-""")
+    let configContent = dedent(fmt"""
+      expand:
+        - HOME
+      directories:
+        - "{testDir2}"
+      symlinks: []
+      copies: []
+      """)
+    writeFile(".dede.yml", configContent)
 
     let (output, code) = runExecutable("test -v")
     check code == 0
