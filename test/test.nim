@@ -146,7 +146,7 @@ suite "config file priority tests":
 
     let (output, code) = runExecutable("test -v")
     check code == 0
-    check testDir1 in output  # Should use dede.yml, not .dede.yml
+    check testDir1 in output # Should use dede.yml, not .dede.yml
 
     removeFile("dede.yml")
     removeFile(".dede.yml")

@@ -29,7 +29,8 @@ proc checkSymlinks(symlinks: seq[array[2, string]], envVars: seq[string]) =
       if actual == source:
         echoVerbose "✓ Symlink correct: ", target, " -> ", source
       else:
-        echoVerbose "✗ Symlink incorrect: ", target, " -> ", actual, " (expected ", source, ")"
+        echoVerbose "✗ Symlink incorrect: ", target, " -> ", actual,
+            " (expected ", source, ")"
     else:
       echoVerbose "✗ Symlink missing: ", target
 
