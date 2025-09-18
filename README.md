@@ -1,6 +1,6 @@
 # dede
 
-simple dotfiles manager
+Simple dotfiles deployment tool
 
 ## License
 

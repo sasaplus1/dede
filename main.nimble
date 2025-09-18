@@ -5,7 +5,7 @@ include "meta.nim"
 
 version = VERSION
 author = "sasaplus1"
-description = "simple dotfiles manager"
+description = "Simple dotfiles deployment tool"
 license = "MIT"
 srcDir = "src"
 namedBin["main"] = "dede"

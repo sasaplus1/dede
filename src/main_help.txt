@@ -1,4 +1,4 @@
-dede - simple dotfiles manager
+dede - Simple dotfiles deployment tool
 
 Usage:
   dede [OPTIONS]
