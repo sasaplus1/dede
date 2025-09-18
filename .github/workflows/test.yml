@@ -27,7 +27,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      - uses: jiro4989/setup-nim-action@3a60cf06f20c1cf3a9becf76b30288c0361d5f1e # v2
+      - uses: jiro4989/setup-nim-action@3a60cf06f20c1cf3a9becf76b30288c0361d5f1e # v2.2.2
         with:
           nim-version: 2.2.4
           nim-install-directory: nim
@@ -58,7 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - if: matrix.os != 'macos-latest'
-        uses: jiro4989/setup-nim-action@v2
+        uses: jiro4989/setup-nim-action@3a60cf06f20c1cf3a9becf76b30288c0361d5f1e # v2.2.2
         with:
           nim-version: 2.2.4
           nim-install-directory: nim
