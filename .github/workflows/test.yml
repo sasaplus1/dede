@@ -30,5 +30,7 @@ jobs:
       - uses: jiro4989/setup-nim-action@v2
         with:
           nim-version: 2.2.4
+          nim-install-directory: nim
+          parent-nim-install-directory: /opt
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: ${{ matrix.command }}
