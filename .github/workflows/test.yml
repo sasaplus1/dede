@@ -1,0 +1,34 @@
+name: test
+
+on:
+  - push
+  - pull_request
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.command }}
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - nimble build
+          - nimble check
+          - nimble format && git diff --exit-code
+          - nimble lint
+          - nimble test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: 2.2.4
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: ${{ matrix.command }}
