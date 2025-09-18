@@ -60,12 +60,12 @@ jobs:
       - if: matrix.os != 'macos-latest'
         uses: jiro4989/setup-nim-action@3a60cf06f20c1cf3a9becf76b30288c0361d5f1e # v2.2.2
         with:
-          nim-version: 2.2.4
+          nim-version: stable
           nim-install-directory: nim
           parent-nim-install-directory: /opt
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - if: matrix.os == 'macos-latest'
-        run: brew update && brew install nim@2.2.4
+        run: brew update && brew install nim
       - run: nimble release
       - if: matrix.os == 'windows-latest'
         uses: actions/download-artifact@v4
