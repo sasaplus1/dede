@@ -19,6 +19,9 @@ requires "yaml"
 
 # Tasks
 
+task build, "Build binary":
+  exec "nim c -o:bin/dede src/main.nim"
+
 task clean, "Clean build artifacts":
   if dirExists("bin"):
     rmDir("bin", true)
@@ -36,7 +39,10 @@ task lint, "Run style checks":
       exec "nim check --styleCheck:error " & file
 
 task release, "Build release binary":
-  exec "nimble build -d:release"
+  when defined(windows):
+    exec "nim c -o:bin/dede.exe --opt:size -d:release -d:lto -d:strip -d:mingw src/main.nim"
+  else:
+    exec "nim c -o:bin/dede --opt:size -d:release -d:lto -d:strip src/main.nim"
 
 task test, "Run tests":
   exec "nim c -o:bin/dede_test src/main.nim"
