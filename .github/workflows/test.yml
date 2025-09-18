@@ -40,7 +40,6 @@ jobs:
           name: dede
           path: ./bin/dede
   release:
-    name: release
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     strategy:
       fail-fast: false
