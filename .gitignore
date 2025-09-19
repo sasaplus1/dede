@@ -13,3 +13,6 @@ htmldocs/
 # configuration file
 /.dede.yml
 /dede.yml
+
+# release files
+/release
