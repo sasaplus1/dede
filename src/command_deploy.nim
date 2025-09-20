@@ -24,6 +24,8 @@ proc deploy(deployConfig: DeployConfig, configFile: string = "dede.yml") =
   # Merge environment variables from config and command line
   let expandedVars = mergeEnvVars(config.expand, deployConfig.envVars)
 
+  var errorCount = 0
+
   # Process directories
   for dir in config.directories:
     let expandedPath = expandEnvVars(dir, expandedVars)
@@ -51,19 +53,21 @@ proc deploy(deployConfig: DeployConfig, configFile: string = "dede.yml") =
       let destExists = symlinkExists(dest) or fileExists(dest) or dirExists(dest)
 
       if destExists and not deployConfig.force:
-        echoVerbose "Symlink destination already exists: ", dest
-      else:
-        if destExists and deployConfig.force:
-          echoVerbose "Removing existing: ", dest
-          if symlinkExists(dest):
-            removeFile(dest)
-          elif fileExists(dest):
-            removeFile(dest)
-          elif dirExists(dest):
-            removeDir(dest)
+        echoError "Error: Destination already exists (use --force to overwrite): ", dest
+        inc(errorCount)
+        continue
 
-        echoVerbose "Creating symlink: ", source, " -> ", dest
-        createSymlink(source, dest)
+      if destExists and deployConfig.force:
+        echoVerbose "Removing existing: ", dest
+        if symlinkExists(dest):
+          removeFile(dest)
+        elif fileExists(dest):
+          removeFile(dest)
+        elif dirExists(dest):
+          removeDir(dest)
+
+      echoVerbose "Creating symlink: ", source, " -> ", dest
+      createSymlink(source, dest)
 
   # Process file copies
   for copy in config.copies:
@@ -77,20 +81,30 @@ proc deploy(deployConfig: DeployConfig, configFile: string = "dede.yml") =
       echoVerbose "[DRY-RUN] Would copy file: ", source, " -> ", dest
     else:
       if not fileExists(source):
-        echoError "Warning: Source file not found: ", source
+        echoError "Error: Source file not found: ", source
+        inc(errorCount)
         continue
 
       let destExists = fileExists(dest)
 
       if destExists and not deployConfig.force:
-        echoVerbose "Destination file already exists: ", dest
-      else:
-        if destExists and deployConfig.force:
-          echoVerbose "Overwriting existing file: ", dest
-        else:
-          echoVerbose "Copying file: ", source, " -> ", dest
+        echoError "Error: Destination file already exists (use --force to overwrite): ", dest
+        inc(errorCount)
+        continue
 
-        copyFileWithPermissions(source, dest)
+      if destExists and deployConfig.force:
+        echoVerbose "Overwriting existing file: ", dest
+      else:
+        echoVerbose "Copying file: ", source, " -> ", dest
+
+      copyFileWithPermissions(source, dest)
+
+  # Check for errors and exit appropriately
+  if errorCount > 0:
+    echoError "Deployment failed with ", errorCount, " error(s)"
+    quit(1)
+  else:
+    echoVerbose "Deployment completed successfully"
 
 proc showDeployHelp() =
   ## Show help message for deploy command

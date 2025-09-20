@@ -5,8 +5,9 @@ import config
 import log
 import utility
 
-proc checkDirectories(directories: seq[string], envVars: seq[string]) =
+proc checkDirectories(directories: seq[string], envVars: seq[string]): int =
   ## Check if directories exist
+  result = 0
   for dir in directories:
     let path = expandEnvVars(dir, envVars)
     if path == "":
@@ -15,9 +16,11 @@ proc checkDirectories(directories: seq[string], envVars: seq[string]) =
       echoVerbose "✓ Directory exists: ", path
     else:
       echoVerbose "✗ Directory missing: ", path
+      inc(result)
 
-proc checkSymlinks(symlinks: seq[array[2, string]], envVars: seq[string]) =
+proc checkSymlinks(symlinks: seq[array[2, string]], envVars: seq[string]): int =
   ## Check if symlinks are correctly set
+  result = 0
   for link in symlinks:
     if link[0] == "" or link[1] == "":
       continue
@@ -31,11 +34,14 @@ proc checkSymlinks(symlinks: seq[array[2, string]], envVars: seq[string]) =
       else:
         echoVerbose "✗ Symlink incorrect: ", target, " -> ", actual,
             " (expected ", source, ")"
+        inc(result)
     else:
       echoVerbose "✗ Symlink missing: ", target
+      inc(result)
 
-proc checkCopies(copies: seq[array[2, string]], envVars: seq[string]) =
+proc checkCopies(copies: seq[array[2, string]], envVars: seq[string]): int =
   ## Check if copied files match
+  result = 0
   for copy in copies:
     if copy[0] == "" or copy[1] == "":
       continue
@@ -50,10 +56,13 @@ proc checkCopies(copies: seq[array[2, string]], envVars: seq[string]) =
           echoVerbose "✓ File matches: ", target
         else:
           echoVerbose "✗ File differs: ", target
+          inc(result)
       else:
         echoVerbose "✗ Source file missing: ", source
+        inc(result)
     else:
       echoVerbose "✗ Target file missing: ", target
+      inc(result)
 
 proc test(configFile: string = "dede.yml", envVars: seq[string] = @[]) =
   ## Test deployed dotfiles
@@ -68,25 +77,34 @@ proc test(configFile: string = "dede.yml", envVars: seq[string] = @[]) =
     echoVerbose "Expanding variables: ", $expandedVars
   echoVerbose ""
 
+  var totalErrors = 0
+
   # Check directories
   if config.directories.len > 0:
     echoVerbose "Checking directories..."
-    checkDirectories(config.directories, expandedVars)
+    let errors = checkDirectories(config.directories, expandedVars)
+    totalErrors += errors
     echoVerbose ""
 
   # Check symlinks
   if config.symlinks.len > 0:
     echoVerbose "Checking symlinks..."
-    checkSymlinks(config.symlinks, expandedVars)
+    let errors = checkSymlinks(config.symlinks, expandedVars)
+    totalErrors += errors
     echoVerbose ""
 
   # Check copies
   if config.copies.len > 0:
     echoVerbose "Checking copied files..."
-    checkCopies(config.copies, expandedVars)
+    let errors = checkCopies(config.copies, expandedVars)
+    totalErrors += errors
     echoVerbose ""
 
-  echo "Test completed"
+  if totalErrors == 0:
+    echoVerbose "Test completed successfully"
+  else:
+    echoVerbose "Test completed with ", totalErrors, " error(s)"
+    quit(1)
 
 proc showTestHelp() =
   const message = staticRead("command_test_help.txt")
