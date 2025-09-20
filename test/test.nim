@@ -126,9 +126,9 @@ suite "test command tests":
     let configPath = tmpDir / "test_config.yml"
     writeFile(configPath, "expand:\n  - HOME\ndirectories: []\nsymlinks: []\ncopies: []\n")
 
-    let (output, code) = runExecutable(fmt"test -c {configPath}")
+    let (output, code) = runExecutable(fmt"test -v -c {configPath}")
     check code == 0
-    check "Test completed" in output
+    check "Test completed successfully" in output
 
     removeFile(configPath)
 
@@ -140,6 +140,9 @@ suite "config file priority tests":
 
     let testDir1 = tmpDir / "dede_test"
     let testDir2 = tmpDir / "dede_test2"
+
+    # Create test directory
+    createDir(testDir1)
 
     # dede.yml with a specific directory
     let dedeYmlContent = dedent(fmt"""
@@ -169,6 +172,7 @@ suite "config file priority tests":
 
     removeFile("dede.yml")
     removeFile(".dede.yml")
+    removeDir(testDir1)
     setCurrentDir(origDir)
 
   test ".dede.yml is used when dede.yml doesn't exist":
@@ -177,6 +181,9 @@ suite "config file priority tests":
     setCurrentDir(tmpDir)
 
     let testDir2 = tmpDir / "dede_test2"
+
+    # Create test directory
+    createDir(testDir2)
 
     let configContent = dedent(fmt"""
       expand:
@@ -193,4 +200,5 @@ suite "config file priority tests":
     check testDir2 in output
 
     removeFile(".dede.yml")
+    removeDir(testDir2)
     setCurrentDir(origDir)
