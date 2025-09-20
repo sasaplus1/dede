@@ -35,11 +35,15 @@ task clean, "Clean build artifacts":
 
 task format, "Format source code":
   for file in walkDirRec("."):
+    if ($DirSep & "nimbledeps" & $DirSep) in file:
+      continue
     if file.endsWith(".nim") or file.endsWith(".nimble"):
       exec "nimpretty " & file
 
 task lint, "Run style checks":
   for file in walkDirRec("."):
+    if ($DirSep & "nimbledeps" & $DirSep) in file:
+      continue
     if file.endsWith(".nim"):
       exec "nim check --styleCheck:error " & file
 
