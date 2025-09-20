@@ -32,6 +32,10 @@ task clean, "Clean build artifacts":
     rmDir("release", true)
   if dirExists("nimcache"):
     rmDir("nimcache", true)
+  if dirExists("nimbledeps"):
+    rmDir("nimbledeps", true)
+  if fileExists("nimble.paths"):
+    rmFile("nimble.paths")
 
 task format, "Format source code":
   for file in walkDirRec("."):
