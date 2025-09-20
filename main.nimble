@@ -68,7 +68,7 @@ task release, "Build release binary":
   elif defined(linux):
     const compilerOptions = "--cc:clang --clang.exe:zigcc --clang.linkerexe:zigcc"
     # x86_64-windows
-    exec fmt"nim c -o:release/dede-windows-x86_64/dede.exe -d:mingw --cpu:amd64 {compilerOptions} -passC:'-target x86_64-windows-gnu' --passL:'-target x86_64-windows-gnu -static' {nimFlags} src/main.nim"
+    exec fmt"nim c -o:release/dede-windows-x86_64/dede.exe -d:mingw --cpu:amd64 {compilerOptions} --passC:'-target x86_64-windows-gnu' --passL:'-target x86_64-windows-gnu -static' {nimFlags} src/main.nim"
     cpFile("README.md", "release/dede-windows-x86_64/README.md")
     cpFile("LICENSE", "release/dede-windows-x86_64/LICENSE")
     # x86_64-gnu
