@@ -47,6 +47,14 @@ Options:
   --help            Show this help message
 ```
 
+## Development
+
+```sh
+$ nimble --localdeps install -dy
+$ nimble --localdeps setup
+$ nimble test
+```
+
 ## License
 
 The MIT license
