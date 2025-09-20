@@ -2,6 +2,49 @@
 
 Simple dotfiles deployment tool
 
+## Installation
+
+Download archive via [releases](https://github.com/sasaplus1/dede/releases)
+
+## Getting started
+
+Create `dede.yml` configuration file:
+
+```sh
+$ dede init
+```
+
+Edit `dede.yml` to specify your dotfiles and directories:
+
+```yml
+expand:
+  - HOME
+
+directories:
+  - "$HOME/.config"
+  - "$HOME/.local/bin"
+  - "$HOME/.local/share"
+
+symlnks:
+  - ["/path/to/.bashrc", "$HOME/.bashrc"]
+  - ["/path/to/.vimrc", "$HOME/.vimrc"]
+
+copies:
+  - []
+```
+
+Deploy dotfiles and directories:
+
+```sh
+$ dede deploy
+```
+
+Test deployed dotfiles and directories:
+
+```sh
+$ dede test
+```
+
 ## Commands
 
 ### init
