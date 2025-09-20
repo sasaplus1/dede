@@ -49,7 +49,6 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          - windows-latest
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     permissions:
@@ -75,12 +74,6 @@ jobs:
       - run: nimble --localdeps install -dy
       - run: nimble --localdeps setup
       - run: nimble release
-      # Windows
-      - if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: dede-windows-x86_64
-          path: release/dede-windows-x86_64
       # macOS
       - if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -98,6 +91,11 @@ jobs:
           name: dede-macos-universal
           path: release/dede-macos-universal
       # Linux
+      - if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dede-windows-x86_64
+          path: release/dede-windows-x86_64
       - if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

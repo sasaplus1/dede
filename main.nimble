@@ -49,11 +49,9 @@ task lint, "Run style checks":
 
 task release, "Build release binary":
   const nimFlags = "--forceBuild --opt:size -d:release -d:lto -d:strip"
-  when defined(windows):
-    exec fmt"nim c -o:release/dede-windows-x86_64/dede.exe --forceBuild -d:mingw {nimFlags} src/main.nim"
-    cpFile("README.md", "release/dede-windows-x86_64/README.md")
-    cpFile("LICENSE", "release/dede-windows-x86_64/LICENSE")
-  elif defined(macosx):
+  # when defined(windows):
+  #   echo "Release build on Windows is not supported."
+  when defined(macosx):
     # x86_64
     exec fmt"nim c -o:release/dede-macos-x86_64/dede --cpu:amd64 --passC:'-target x86_64-apple-macos11' --passL:'-target x86_64-apple-macos11' {nimFlags} src/main.nim"
     cpFile("README.md", "release/dede-macos-x86_64/README.md")
@@ -69,6 +67,10 @@ task release, "Build release binary":
     cpFile("LICENSE", "release/dede-macos-universal/LICENSE")
   elif defined(linux):
     const compilerOptions = "--cc:clang --clang.exe:zigcc --clang.linkerexe:zigcc"
+    # x86_64-windows
+    exec fmt"nim c -o:release/dede-windows-x86_64/dede.exe -d:mingw --cpu:amd64 {compilerOptions} -passC:'-target x86_64-windows-gnu' --passL:'-target x86_64-windows-gnu -static' {nimFlags} src/main.nim"
+    cpFile("README.md", "release/dede-windows-x86_64/README.md")
+    cpFile("LICENSE", "release/dede-windows-x86_64/LICENSE")
     # x86_64-gnu
     exec fmt"nim c -o:release/dede-linux-x86_64-gnu/dede --cpu:amd64 {compilerOptions} --passC:'-target x86_64-linux-gnu' --passL:'-target x86_64-linux-gnu' {nimFlags} src/main.nim"
     cpFile("README.md", "release/dede-linux-x86_64-gnu/README.md")
