@@ -82,14 +82,24 @@ suite "init command tests":
 
 suite "deploy command tests":
   test "deploy shows error when no config":
+    # Create a temporary directory and run from there
+    let tmpDir = getTempDir() / "deploy_test_no_config"
+    createDir(tmpDir)
+    let origDir = getCurrentDir()
+    setCurrentDir(tmpDir)
+
     let (output, code) = runExecutable("deploy")
     check code == 1
     check "not found" in output or "Error" in output
 
+    setCurrentDir(origDir)
+    removeDir(tmpDir)
+
   test "deploy with -c option":
     let tmpDir = getTempDir()
     let configPath = tmpDir / "test_deploy.yml"
-    writeFile(configPath, "deploy:\n")
+    # Write invalid YAML (not parseable)
+    writeFile(configPath, "invalid: [unclosed bracket")
 
     let (_, code) = runExecutable(fmt"deploy -c {configPath}")
     check code == 1
@@ -98,9 +108,18 @@ suite "deploy command tests":
 
 suite "test command tests":
   test "test shows error when no config":
+    # Create a temporary directory and run from there
+    let tmpDir = getTempDir() / "test_test_no_config"
+    createDir(tmpDir)
+    let origDir = getCurrentDir()
+    setCurrentDir(tmpDir)
+
     let (output, code) = runExecutable("test")
     check code == 1
     check "not found" in output or "Error" in output
+
+    setCurrentDir(origDir)
+    removeDir(tmpDir)
 
   test "test with -c option":
     let tmpDir = getTempDir()
