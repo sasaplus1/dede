@@ -1,4 +1,4 @@
-name: test
+name: CI
 
 on:
   - push
@@ -36,12 +36,7 @@ jobs:
       - run: nimble --localdeps install -dy
       - run: nimble --localdeps setup
       - run: ${{ matrix.command }}
-      - if: matrix.command == 'nimble build'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: dede
-          path: ./bin/dede
-  release:
+  build:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
       fail-fast: false
@@ -116,3 +111,38 @@ jobs:
         with:
           name: dede-linux-aarch64-musl
           path: release/dede-linux-aarch64-musl
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes --draft
+        env:
+          GH_PROMPT_DISABLED: 1
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          path: artifacts
+          pattern: dede-*
+      - run: >
+          find . -maxdepth 1 -type d -name "dede-windows-*"
+          -exec sh -c 'cd "{}" && zip -r "../$(basename "{}").zip" .' \;
+        working-directory: artifacts
+      - run: >
+          find . -maxdepth 1 -type d \( -name "dede-macos-*" -o -name "dede-linux-*" \)
+          -exec sh -c 'tar -czf "$(basename "{}").tar.gz" -C "{}" .' \;
+        working-directory: artifacts
+      - run: gh release upload "$GITHUB_REF_NAME" *.{zip,tar.gz}
+        working-directory: artifacts
+        env:
+          GH_PROMPT_DISABLED: 1
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: gh release edit "$GITHUB_REF_NAME" --draft=false
+        env:
+          GH_PROMPT_DISABLED: 1
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
