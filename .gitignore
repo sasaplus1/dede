@@ -16,3 +16,8 @@ htmldocs/
 
 # release files
 /release
+
+# localdeps
+/nimbledeps
+/nimble.paths
+/nimble.develop
