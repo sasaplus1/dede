@@ -57,6 +57,7 @@ Usage:
 
 Options:
   -c, --config FILE  Specify configuration file (default: dede.yml, .dede.yml)
+  -v, --verbose      Enable verbose output
   --help             Show this help message
 ```
 
@@ -71,6 +72,7 @@ Usage:
 Options:
   -c, --config FILE  Specify configuration file (default: dede.yml, .dede.yml)
   -e, --expand VAR   Expand additional environment variable
+  -v, --verbose      Enable verbose output
   --dry-run          Show what would be deployed without executing
   --force            Force deployment execution
   --help             Show this help message
@@ -87,6 +89,7 @@ Usage:
 Options:
   -c, --config FILE  Specify configuration file (default: dede.yml, .dede.yml)
   -e, --expand VAR   Expand additional environment variable
+  -v, --verbose      Enable verbose output
   --help             Show this help message
 ```
 
