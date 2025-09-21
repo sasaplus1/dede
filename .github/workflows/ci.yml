@@ -69,6 +69,8 @@ jobs:
       - run: nimble --localdeps install -dy
       - run: nimble --localdeps setup
       - run: nimble release
+      # without dede.exe
+      - run: find release -name 'dede' -type f -exec chmod +x {} \;
       # macOS
       - if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -131,11 +133,11 @@ jobs:
           path: artifacts
           pattern: dede-*
       - run: >
-          find . -maxdepth 1 -type d -name "dede-windows-*"
+          find . -maxdepth 1 -type d -name 'dede-windows-*'
           -exec sh -c 'cd "{}" && zip -r "../$(basename "{}").zip" .' \;
         working-directory: artifacts
       - run: >
-          find . -maxdepth 1 -type d \( -name "dede-macos-*" -o -name "dede-linux-*" \)
+          find . -maxdepth 1 -type d \( -name 'dede-macos-*' -o -name 'dede-linux-*' \)
           -exec sh -c 'tar -czf "$(basename "{}").tar.gz" -C "{}" .' \;
         working-directory: artifacts
       - run: gh release upload "$GITHUB_REF_NAME" *.{zip,tar.gz}
