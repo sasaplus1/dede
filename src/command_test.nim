@@ -3,7 +3,7 @@ import std/parseopt
 import std/strutils
 import config
 import log
-import utility
+import env
 
 proc checkDirectories(directories: seq[string], envVars: seq[string]): int =
   ## Check if directories exist

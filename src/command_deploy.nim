@@ -3,7 +3,7 @@ import std/parseopt
 import std/strutils
 import config
 import log
-import utility
+import env
 
 type
   DeployConfig* = object
