@@ -25,7 +25,7 @@ directories:
   - "$HOME/.local/bin"
   - "$HOME/.local/share"
 
-symlnks:
+symlinks:
   - ["/path/to/.bashrc", "$HOME/.bashrc"]
   - ["/path/to/.vimrc", "$HOME/.vimrc"]
 
