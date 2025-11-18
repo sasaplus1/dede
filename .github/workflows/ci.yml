@@ -26,7 +26,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
       - uses: jiro4989/setup-nim-action@3a60cf06f20c1cf3a9becf76b30288c0361d5f1e # v2.2.2
         with:
           nim-version: 2.2.4
@@ -52,7 +52,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
       - if: matrix.os != 'macos-latest'
         uses: jiro4989/setup-nim-action@3a60cf06f20c1cf3a9becf76b30288c0361d5f1e # v2.2.2
         with:
@@ -123,7 +123,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
       - run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes --draft
         env:
           GH_PROMPT_DISABLED: 1
